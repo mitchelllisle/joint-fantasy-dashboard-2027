@@ -18,8 +18,6 @@ const LEAGUE_ID = process.env.LEAGUE_ID ?? '6371';
 
 const DRAFT  = 'https://draft.premierleague.com/api';
 const FPL    = 'https://fantasy.premierleague.com/api';
-
-// Browser-like headers — bare Node fetch is often rate-limited by the FPL API
 const HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
   'Accept': 'application/json, */*',
@@ -49,7 +47,7 @@ try {
   write('bootstrap.json', bootstrap);
   write('details.json', details);
 
-  // Detect current GW for upcoming fixtures
+  // Current GW
   let currentGW = 1;
   if (Array.isArray(bootstrap.events)) {
     const cur = bootstrap.events.find(e => e.is_current);
@@ -58,6 +56,7 @@ try {
     currentGW = bootstrap.events.current;
   }
 
+  // Upcoming fixtures
   try {
     const fixtures = await get(`${FPL}/fixtures/?event=${currentGW + 1}`);
     write('fixtures.json', fixtures);
@@ -65,9 +64,46 @@ try {
     console.warn(`  ⚠ fixtures skipped: ${e.message}`);
   }
 
-  console.log('Done.');
+  // Squad picks — builds bench waste + position mix data
+  // Maps element id → player object for quick lookup
+  const playerById = Object.fromEntries(
+    (bootstrap.elements ?? []).map(p => [p.id, p]),
+  );
+
+  const squads = [];
+  let picksOk = 0, picksFail = 0;
+
+  await Promise.all(
+    (details.league_entries ?? []).map(async (entry) => {
+      try {
+        const data = await get(`${DRAFT}/entry/${entry.entry_id}/event/${currentGW}`);
+        for (const pick of (data.picks ?? [])) {
+          const player = playerById[pick.element];
+          if (!player) continue;
+          squads.push({
+            ...player,
+            owner: entry.entry_name,
+            team_name: entry.entry_name,
+            position: pick.position,
+          });
+        }
+        picksOk++;
+      } catch {
+        picksFail++;
+      }
+    }),
+  );
+
+  if (picksOk > 0) {
+    write('squads.json', squads);
+    if (picksFail > 0) console.warn(`  ⚠ ${picksFail} entries failed picks`);
+  } else {
+    console.warn('  ⚠ no squad data available — picks endpoint may require auth');
+  }
+
+  console.log(`Done. (GW${currentGW}, ${details.league_entries?.length ?? 0} managers)`);
 } catch (e) {
   console.error(`\nFetch failed: ${e.message}`);
   console.error('The build will use the existing cached JSON files.\n');
-  process.exit(0); // Don't fail the build
+  process.exit(0);
 }

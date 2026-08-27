@@ -27,7 +27,9 @@
       </div>
 
       {#if fx.latest.length === 0}
-        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">No results yet this gameweek</div>
+        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">
+          Draft league match results are not available via the public API for this league.
+        </div>
       {:else}
         <div style="display:flex;flex-direction:column;gap:8px">
           {#each fx.latest as m (m.key)}
@@ -98,7 +100,7 @@
 
       <div style="display:flex;flex-direction:column;gap:10px">
         {#each dashboard.upcoming.fixtures as fix (fix.key)}
-          {#if fix.managers.length > 0}
+          {#if true}
             <div style="background:#17171a;border-radius:14px;padding:16px 18px">
               <!-- Match header -->
               <!-- Match header: logo + team name · vs · team name + logo + kickoff -->
@@ -230,7 +232,7 @@
     </div>
 
     {#if fx.archive.length === 0}
-      <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">No archived results available</div>
+      <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">Match history not available for this league via the public API.</div>
     {:else}
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">
         {#each fx.archive as block (block.key)}
@@ -263,7 +265,7 @@
   <Modal title="Results archive" open={openModal === 'archive'} on:close={() => openModal = null}>
     <div style="position:relative">
       {#if fx.archive.length === 0}
-        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">No archived results available</div>
+        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">Match history not available for this league via the public API.</div>
       {:else}
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">
           {#each fx.archive as block (block.key)}
