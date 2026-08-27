@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types.js';
-import { error } from '@sveltejs/kit';
 import { PremierLeagueAPI } from 'joint-fpl-lib';
 import type { SquadPlayer, MatchResult } from 'joint-fpl-lib';
 import { buildDashboard, buildUpcomingFixtures } from '$lib/derive.js';
+import type { DashboardData } from '$lib/types.js';
 import { env } from '$env/dynamic/private';
 
 const LEAGUE_ID = parseInt(env.LEAGUE_ID ?? '6371', 10);
@@ -12,7 +12,9 @@ const EMPTY_MATCH_RESULT: MatchResult = { title: '', sentence: '', data: [] };
 export const load: PageServerLoad = async ({ fetch }) => {
   const api = new PremierLeagueAPI();
 
-  // bootstrap + details are required; everything else degrades gracefully
+  // If the FPL API is unreachable (CI rate-limiting, downtime, etc.) return
+  // null so prerendering succeeds and the page shows a graceful error state
+  // rather than crashing the build with a 502.
   let bootstrap, details;
   try {
     [bootstrap, details] = await Promise.all([
@@ -20,25 +22,18 @@ export const load: PageServerLoad = async ({ fetch }) => {
       api.getDetails(LEAGUE_ID),
     ]);
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    throw error(502, `FPL API unavailable: ${msg}`);
+    console.error('FPL API unavailable:', e instanceof Error ? e.message : e);
+    return { dashboard: null as DashboardData | null };
   }
 
-  // matchResults: history endpoint often requires auth — degrade silently
   let matchResults: MatchResult = EMPTY_MATCH_RESULT;
-  try {
-    matchResults = await api.getMatchResults(LEAGUE_ID);
-  } catch { /* derive.ts falls back to rawMatches */ }
+  try { matchResults = await api.getMatchResults(LEAGUE_ID); } catch { /* fall back to rawMatches */ }
 
-  // Squad/pick data: requires auth on some leagues
   let squads: SquadPlayer[] = [];
-  try {
-    squads = await api.getSquads(LEAGUE_ID);
-  } catch { /* squad fields will be null */ }
+  try { squads = await api.getSquads(LEAGUE_ID); } catch { /* squad fields will be null */ }
 
   const dashboard = buildDashboard(bootstrap, details, matchResults, squads);
 
-  // Upcoming PL fixtures for the next gameweek
   const nextGW = dashboard.gw + 1;
   let rawFixtures: unknown[] = [];
   try {

@@ -12,7 +12,7 @@
   const TABS: Tab[] = ['Overview', 'Managers', 'Fixtures'];
 
   let activeTab: Tab = 'Overview';
-  let selectedIdx = dashboard.ordered[0].i;
+  let selectedIdx = dashboard?.ordered[0]?.i ?? 0;
   let banter = true;
 
   function selectManager(i: number) {
@@ -29,31 +29,42 @@
     padding:0 32px;height:58px;
     display:flex;align-items:center;gap:24px">
 
-    <!-- Logo -->
     <img src="/draft-logo.svg" alt="JointDraft" style="height:22px;width:auto;flex:none" />
-
-    <!-- Divider -->
     <div style="width:1px;height:20px;background:rgba(255,255,255,.1);flex:none"></div>
 
-    <!-- Nav links -->
-    <div style="display:flex;align-items:center;gap:2px">
-      {#each TABS as tab}
-        <button
-          class="nav-item"
-          on:click={() => (activeTab = tab)}
-          style="padding:8px 16px;border-radius:8px;font:500 14px/1 Barlow,sans-serif;
-            border:none;cursor:pointer;transition:background 130ms ease-out,color 130ms ease-out;
-            background:{activeTab === tab ? 'rgba(255,255,255,.09)' : 'transparent'};
-            color:{activeTab === tab ? '#f4f4f2' : 'rgba(255,255,255,.5)'}"
-        >{tab}</button>
-      {/each}
-    </div>
+    {#if dashboard}
+      <div style="display:flex;align-items:center;gap:2px">
+        {#each TABS as tab}
+          <button
+            class="nav-item"
+            on:click={() => (activeTab = tab)}
+            style="padding:8px 16px;border-radius:8px;font:500 14px/1 Barlow,sans-serif;
+              border:none;cursor:pointer;transition:background 130ms ease-out,color 130ms ease-out;
+              background:{activeTab === tab ? 'rgba(255,255,255,.09)' : 'transparent'};
+              color:{activeTab === tab ? '#f4f4f2' : 'rgba(255,255,255,.5)'}"
+          >{tab}</button>
+        {/each}
+      </div>
+    {/if}
 
   </nav>
 
   <!-- ── Page content ── -->
   <div style="padding:20px 32px 48px">
-    {#if activeTab === 'Overview'}
+    {#if !dashboard}
+      <!-- FPL API was unreachable at build time -->
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;
+        min-height:60vh;gap:16px;text-align:center">
+        <div style="font:600 24px/1.1 Barlow,sans-serif;color:#f4f4f2;letter-spacing:-.02em">
+          Data unavailable
+        </div>
+        <div style="font:400 14px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.4);max-width:400px">
+          The FPL API was unreachable when this page was built. Try refreshing, or
+          <a href="https://github.com/mitchelllisle/joint-fantasy-dashboard-2027/actions"
+             style="color:#7bdcb5">trigger a new build</a> once the API is back.
+        </div>
+      </div>
+    {:else if activeTab === 'Overview'}
       <Overview
         {dashboard} {selectedIdx} {banter}
         on:select={(e) => selectManager(e.detail)}
