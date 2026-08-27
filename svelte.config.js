@@ -6,6 +6,10 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     adapter: adapter(),
+    paths: {
+      // Set BASE_PATH=/joint-fantasy-dashboard-2027 in CI for GitHub Pages
+      base: process.env.BASE_PATH ?? '',
+    },
   },
 };
 
