@@ -28,10 +28,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Fetch FPL data
+        run: node scripts/fetch.js
+        env:
+          LEAGUE_ID: ${{ secrets.LEAGUE_ID || '6371' }}
+
       - name: Build
         run: npm run build
-        env:
-          LEAGUE_ID: ${{ secrets.LEAGUE_ID }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
