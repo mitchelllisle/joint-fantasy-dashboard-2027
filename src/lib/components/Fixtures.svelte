@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { DashboardData } from '$lib/types.js';
+  import { base } from '$app/paths';
   import Avatar from '$lib/components/Avatar.svelte';
   import Modal from '$lib/components/Modal.svelte';
   import ExpandButton from '$lib/components/ExpandButton.svelte';
@@ -26,7 +27,9 @@
       </div>
 
       {#if fx.latest.length === 0}
-        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">No results yet this gameweek</div>
+        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">
+          Draft league match results are not available via the public API for this league.
+        </div>
       {:else}
         <div style="display:flex;flex-direction:column;gap:8px">
           {#each fx.latest as m (m.key)}
@@ -97,7 +100,7 @@
 
       <div style="display:flex;flex-direction:column;gap:10px">
         {#each dashboard.upcoming.fixtures as fix (fix.key)}
-          {#if fix.managers.length > 0}
+          {#if true}
             <div style="background:#17171a;border-radius:14px;padding:16px 18px">
               <!-- Match header -->
               <!-- Match header: logo + team name · vs · team name + logo + kickoff -->
@@ -106,7 +109,7 @@
                   <!-- Home -->
                   <div style="display:flex;align-items:center;gap:8px;min-width:0">
                     {#if fix.homeLogo}
-                      <img src={fix.homeLogo} alt={fix.homeShort} width="28" height="28"
+                      <img src="{base}{fix.homeLogo}" alt={fix.homeShort} width="28" height="28"
                         style="object-fit:contain;flex:none" />
                     {/if}
                     <span style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
@@ -117,7 +120,7 @@
                   <!-- Away -->
                   <div style="display:flex;align-items:center;gap:8px;min-width:0">
                     {#if fix.awayLogo}
-                      <img src={fix.awayLogo} alt={fix.awayShort} width="28" height="28"
+                      <img src="{base}{fix.awayLogo}" alt={fix.awayShort} width="28" height="28"
                         style="object-fit:contain;flex:none" />
                     {/if}
                     <span style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
@@ -172,14 +175,14 @@
                   <div style="display:flex;align-items:center;gap:16px;min-width:0">
                     <div style="display:flex;align-items:center;gap:8px;min-width:0">
                       {#if fix.homeLogo}
-                        <img src={fix.homeLogo} alt={fix.homeShort} width="28" height="28" style="object-fit:contain;flex:none" />
+                        <img src="{base}{fix.homeLogo}" alt={fix.homeShort} width="28" height="28" style="object-fit:contain;flex:none" />
                       {/if}
                       <span style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.homeTeam}</span>
                     </div>
                     <span style="font:400 12px/1 Barlow,sans-serif;color:rgba(255,255,255,.3);flex:none">vs</span>
                     <div style="display:flex;align-items:center;gap:8px;min-width:0">
                       {#if fix.awayLogo}
-                        <img src={fix.awayLogo} alt={fix.awayShort} width="28" height="28" style="object-fit:contain;flex:none" />
+                        <img src="{base}{fix.awayLogo}" alt={fix.awayShort} width="28" height="28" style="object-fit:contain;flex:none" />
                       {/if}
                       <span style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.awayTeam}</span>
                     </div>
@@ -229,7 +232,7 @@
     </div>
 
     {#if fx.archive.length === 0}
-      <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">No archived results available</div>
+      <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">Match history not available for this league via the public API.</div>
     {:else}
       <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">
         {#each fx.archive as block (block.key)}
@@ -262,7 +265,7 @@
   <Modal title="Results archive" open={openModal === 'archive'} on:close={() => openModal = null}>
     <div style="position:relative">
       {#if fx.archive.length === 0}
-        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">No archived results available</div>
+        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">Match history not available for this league via the public API.</div>
       {:else}
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">
           {#each fx.archive as block (block.key)}

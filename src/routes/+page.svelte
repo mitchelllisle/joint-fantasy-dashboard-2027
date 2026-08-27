@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types.js';
+  import { base } from '$app/paths';
   import Overview from '$lib/components/Overview.svelte';
   import Managers from '$lib/components/Managers.svelte';
   import Fixtures from '$lib/components/Fixtures.svelte';
@@ -29,7 +30,7 @@
     padding:0 32px;height:58px;
     display:flex;align-items:center;gap:24px">
 
-    <img src="/draft-logo.svg" alt="JointDraft" style="height:22px;width:auto;flex:none" />
+    <img src="{base}/draft-logo.svg" alt="JointDraft" style="height:22px;width:auto;flex:none" />
     <div style="width:1px;height:20px;background:rgba(255,255,255,.1);flex:none"></div>
 
     {#if dashboard}

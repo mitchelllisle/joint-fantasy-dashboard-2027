@@ -35,6 +35,8 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          BASE_PATH: /joint-fantasy-dashboard-2027
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

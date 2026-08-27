@@ -508,7 +508,7 @@
           <path d={line.d} fill="none" stroke={line.color}
             stroke-width={line.sw} opacity={line.op}
             stroke-linecap="round" stroke-linejoin="round" />
-          <circle cx={line.ex} cy={line.ey} r="4" fill={line.color} opacity={line.op} />
+          <circle cx={line.ex} cy={line.ey} r="6" fill={line.color} opacity={line.op} />
         {/each}
         <!-- X-tick labels -->
         {#each race.xticks as xt (xt.key)}
@@ -548,7 +548,7 @@
         <path d={line.d} fill="none" stroke={line.color}
           stroke-width={line.sw} opacity={line.op}
           stroke-linecap="round" stroke-linejoin="round" />
-        <circle cx={line.ex} cy={line.ey} r="4" fill={line.color} opacity={line.op} />
+        <circle cx={line.ex} cy={line.ey} r="6" fill={line.color} opacity={line.op} />
       {/each}
       {#each race.xticks as xt (xt.key)}
         <text x={xt.x} y={race.H - 2}
