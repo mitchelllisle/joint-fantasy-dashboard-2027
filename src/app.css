@@ -34,3 +34,50 @@ body {
 .nav-item:hover {
   color: #f4f4f2 !important;
 }
+
+/* ── Mobile breakpoint (≤ 768px) ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Navbar */
+  .app-nav {
+    padding: 0 16px !important;
+    gap: 12px !important;
+    height: 52px !important;
+  }
+  .nav-logo { height: 18px !important; }
+  .nav-divider { display: none !important; }
+  .nav-pills { gap: 1px !important; }
+
+  /* Page content */
+  .page-content { padding: 12px 16px 40px !important; }
+
+  /* Overview */
+  .hero-band {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    padding: 20px 18px !important;
+  }
+  .hero-chips { flex-wrap: wrap !important; gap: 8px !important; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .standings-scatter-grid { grid-template-columns: 1fr !important; }
+  .charts-row { grid-template-columns: 1fr !important; }
+  .bottom-row { grid-template-columns: 1fr !important; }
+
+  /* Standings columns: hide Avg/GW on mobile */
+  .standings-header-grid,
+  .standings-row-grid {
+    grid-template-columns: 22px 1fr 60px !important;
+  }
+  .col-avg { display: none !important; }
+
+  /* Managers */
+  .managers-main-grid { grid-template-columns: 1fr !important; }
+  .mgr-left-panel { padding: 14px !important; }
+  .mgr-picker { flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; gap: 8px !important; padding-bottom: 4px; }
+  .mgr-picker-item { flex: none !important; min-width: unset !important; }
+  .profile-header { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+  .stats-chips { flex-wrap: wrap !important; gap: 8px !important; }
+  .stats-chip { min-width: 80px !important; }
+  .mgr-row1 { grid-template-columns: 1fr !important; }
+  .mgr-row2 { grid-template-columns: 1fr !important; }
+}

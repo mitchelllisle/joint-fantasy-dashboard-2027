@@ -132,7 +132,7 @@
 </script>
 
 <!-- ── Section 1: Hero band ─────────────────────────────────────────────────── -->
-<div style="background:linear-gradient(120deg,rgba(255,77,22,.13) 0%,rgba(255,77,22,.03) 55%,transparent 100%),#111113;
+<div class="hero-band" style="background:linear-gradient(120deg,rgba(255,77,22,.13) 0%,rgba(255,77,22,.03) 55%,transparent 100%),#111113;
   border:1px solid rgba(255,77,22,.18);border-radius:20px;padding:28px 30px;
   display:flex;align-items:center;justify-content:space-between;gap:24px">
 
@@ -152,7 +152,7 @@
     </div>
   </div>
 
-  <div style="display:flex;gap:10px;flex:none">
+  <div class="hero-chips" style="display:flex;gap:10px;flex:none">
     <!-- Gap chip -->
     <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 20px;min-width:110px">
       <div style="font:400 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.04em">Gap 1→2</div>
@@ -173,7 +173,7 @@
 </div>
 
 <!-- ── Section 2: KPI row ────────────────────────────────────────────────────── -->
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px">
+<div class="kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px">
   {#each kpis as kpi (kpi.label)}
     <div style="background:#111113;border-radius:18px;padding:18px 20px">
       <!-- Accent bars + label -->
@@ -207,7 +207,7 @@
 </div>
 
 <!-- ── Section 3: Standings + Good vs Lucky ─────────────────────────────────── -->
-<div style="display:grid;grid-template-columns:1fr 1.05fr;gap:14px;margin-top:14px">
+<div class="standings-scatter-grid" style="display:grid;grid-template-columns:1fr 1.05fr;gap:14px;margin-top:14px">
 
   <!-- Standings card -->
   <div style="background:#111113;border-radius:20px;padding:22px 24px 18px">
@@ -224,10 +224,10 @@
     </div>
 
     <!-- Grid header -->
-    <div style="display:grid;grid-template-columns:22px 1fr 60px 52px;
+    <div class="standings-header-grid" style="display:grid;grid-template-columns:22px 1fr 60px 52px;
       gap:0 9px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.07)">
       {#each ['#','Manager','Pts','Avg/GW'] as col, ci}
-        <div style="font:500 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.35);
+        <div class={ci === 3 ? 'col-avg' : ''} style="font:500 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.35);
           {ci >= 2 ? 'text-align:right' : ''}">
           {col}
         </div>
@@ -239,7 +239,7 @@
       {@const delta = team.prev - team.rank}
       {@const avg = Math.round(team.total / Math.max(1, dashboard.gw))}
       <div
-        class="standings-row"
+        class="standings-row standings-row-grid"
         role="button"
         tabindex="0"
         on:click={() => dispatch('select', team.i)}
@@ -272,7 +272,7 @@
         </div>
 
         <!-- Avg / GW -->
-        <div style="font:500 12.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.5);text-align:right">
+        <div class="col-avg" style="font:500 12.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.5);text-align:right">
           {avg}
         </div>
       </div>
@@ -481,7 +481,7 @@
 </div>
 
 <!-- ── Section 4: Race chart + Bump chart ────────────────────────────────────── -->
-<div style="display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-top:14px">
+<div class="charts-row" style="display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-top:14px">
 
   <!-- Race chart -->
   <div style="background:#111113;border-radius:20px;padding:22px 24px 16px">
@@ -631,7 +631,7 @@
 </div>
 
 <!-- ── Section 5: Bottom row ──────────────────────────────────────────────────── -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+<div class="bottom-row" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
 
   <!-- Bench wasted -->
   <div style="background:#111113;border-radius:20px;padding:22px 24px">
