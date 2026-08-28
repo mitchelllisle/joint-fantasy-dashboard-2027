@@ -23,6 +23,8 @@
 
     <!-- Section header -->
     <button
+      type="button"
+      aria-expanded={showUpcoming}
       on:click={() => showUpcoming = !showUpcoming}
       style="width:100%;display:flex;align-items:center;justify-content:space-between;
         padding:18px 24px;background:transparent;border:none;cursor:pointer;text-align:left"
@@ -105,6 +107,8 @@
     <div style="background:#111113;border-radius:20px;overflow:hidden">
 
       <button
+        type="button"
+        aria-expanded={showPrevious}
         on:click={() => showPrevious = !showPrevious}
         style="width:100%;display:flex;align-items:center;justify-content:space-between;
           padding:18px 24px;background:transparent;border:none;cursor:pointer;text-align:left"

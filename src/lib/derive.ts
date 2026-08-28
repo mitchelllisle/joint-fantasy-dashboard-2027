@@ -216,7 +216,7 @@ interface RawCompletedFixture {
 export function buildPreviousGWFixtures(
   gw: number,
   completedFixtures: unknown[],
-  /** elements object keyed by element id: { [id]: { stats: { total_points } } } */
+  /** elements object keyed by element id, each with stats and explain breakdown per fixture */
   eventLive: unknown,
   squads: SquadPlayer[],
   bootstrap: BootstrapStatic,
@@ -224,7 +224,20 @@ export function buildPreviousGWFixtures(
 ): PreviousGW | null {
   if (!completedFixtures.length) return null;
 
-  const live = eventLive as Record<string, { stats: { total_points: number } }>;
+  // explain entry: [[{stat,points,...}[], fixtureId], ...]
+  type ExplainEntry = [[{ points: number }[], number]];
+  type LiveElement = { stats: { total_points: number }; explain?: ExplainEntry };
+  const live = eventLive as Record<string, LiveElement>;
+
+  // Points for a player in a specific fixture — uses explain array so double-GW
+  // fixtures are attributed correctly rather than showing the whole-GW total.
+  function fixturePoints(el: LiveElement | undefined, fixtureId: number): number {
+    if (!el) return 0;
+    const entry = el.explain?.find(([, fId]) => fId === fixtureId);
+    return entry
+      ? entry[0].reduce((s, { points }) => s + points, 0)
+      : el.stats.total_points;
+  }
   const plTeamById = new Map(
     (bootstrap.teams as Array<{ id: number; name: string; short_name: string }>).map(t => [t.id, t]),
   );
@@ -250,7 +263,7 @@ export function buildPreviousGWFixtures(
         .map(p => ({
           name: p.web_name ?? '—',
           pos: POSLAB[(p.element_type ?? 1) - 1] ?? 'MID',
-          points: live[String(p.id)]?.stats?.total_points ?? 0,
+          points: fixturePoints(live[String(p.id)], rawFix.id),
           isStarter: p.position <= 11,
         }))
         .sort((a, b) => b.points - a.points);
