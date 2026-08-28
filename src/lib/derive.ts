@@ -1,6 +1,6 @@
 import type { BootstrapStatic } from 'joint-fpl-lib';
 import type { MatchResult, SquadPlayer } from 'joint-fpl-lib';
-import type { DashboardData, DashboardTeam, FixturesData, MatchFixture, UpcomingFixture, RawMatch, UpcomingGW, UpcomingPLFixture } from './types.js';
+import type { DashboardData, DashboardTeam, FixturesData, MatchFixture, UpcomingFixture, RawMatch, UpcomingGW, UpcomingPLFixture, PreviousGW, PreviousGWFixture } from './types.js';
 import type { ExtendedLeagueDetails, DraftEventsWrapper } from './fplExtended.js';
 import { PROBS, HUES, POSLAB, teamKey } from './utils.js';
 import { teamLogoUrl } from './teamLogos.js';
@@ -201,6 +201,99 @@ export function buildUpcomingFixtures(
 }
 
 
+// ── Previous GW: completed PL fixtures with per-manager player points ─────────
+
+interface RawCompletedFixture {
+  id: number;
+  event: number;
+  team_h: number;
+  team_a: number;
+  team_h_score: number | null;
+  team_a_score: number | null;
+  finished: boolean;
+}
+
+export function buildPreviousGWFixtures(
+  gw: number,
+  completedFixtures: unknown[],
+  /** elements object keyed by element id, each with stats and explain breakdown per fixture */
+  eventLive: unknown,
+  squads: SquadPlayer[],
+  bootstrap: BootstrapStatic,
+  ordered: DashboardTeam[],
+): PreviousGW | null {
+  if (!completedFixtures.length) return null;
+
+  // explain entry: [[{stat,points,...}[], fixtureId], ...]
+  type ExplainEntry = [[{ points: number }[], number]];
+  type LiveElement = { stats: { total_points: number }; explain?: ExplainEntry };
+  const live = eventLive as Record<string, LiveElement>;
+
+  // Points for a player in a specific fixture — uses explain array so double-GW
+  // fixtures are attributed correctly rather than showing the whole-GW total.
+  function fixturePoints(el: LiveElement | undefined, fixtureId: number): number {
+    if (!el) return 0;
+    const entry = el.explain?.find(([, fId]) => fId === fixtureId);
+    return entry
+      ? entry[0].reduce((s, { points }) => s + points, 0)
+      : el.stats.total_points;
+  }
+  const plTeamById = new Map(
+    (bootstrap.teams as Array<{ id: number; name: string; short_name: string }>).map(t => [t.id, t]),
+  );
+
+  const squadByOwner = new Map<string, SquadPlayer[]>();
+  for (const p of squads) {
+    const arr = squadByOwner.get(p.owner) ?? [];
+    arr.push(p);
+    squadByOwner.set(p.owner, arr);
+  }
+
+  const fixtures: PreviousGWFixture[] = [];
+
+  for (const rawFix of completedFixtures as RawCompletedFixture[]) {
+    const home = plTeamById.get(rawFix.team_h);
+    const away = plTeamById.get(rawFix.team_a);
+    if (!home || !away) continue;
+
+    const managers = ordered.flatMap(mgr => {
+      const squad = squadByOwner.get(mgr.name) ?? [];
+      const players = squad
+        .filter(p => p.team === rawFix.team_h || p.team === rawFix.team_a)
+        .map(p => ({
+          name: p.web_name ?? '—',
+          pos: POSLAB[(p.element_type ?? 1) - 1] ?? 'MID',
+          points: fixturePoints(live[String(p.id)], rawFix.id),
+          isStarter: p.position <= 11,
+        }))
+        .sort((a, b) => b.points - a.points);
+      if (!players.length) return [];
+      return [{
+        teamName: mgr.name,
+        teamKey: mgr.key,
+        color: mgr.color,
+        totalPoints: players.filter(p => p.isStarter).reduce((s, p) => s + p.points, 0),
+        players,
+      }];
+    });
+
+    fixtures.push({
+      key: rawFix.id,
+      homeTeam: home.name,
+      awayTeam: away.name,
+      homeShort: home.short_name,
+      awayShort: away.short_name,
+      homeLogo: teamLogoUrl(home.short_name),
+      awayLogo: teamLogoUrl(away.short_name),
+      homeScore: rawFix.team_h_score,
+      awayScore: rawFix.team_a_score,
+      managers,
+    });
+  }
+
+  return { gw, fixtures };
+}
+
 export function buildDashboard(
   bootstrap: BootstrapStatic,
   /** Typed as LeagueDetails by joint-fpl-lib; actual API response contains league + matches. */
@@ -389,6 +482,7 @@ export function buildDashboard(
     fx: buildFixtures(teams, ordered, rawMatches, entryIdxById, currentGW),
     race: computeRace(ordered, played),
     bump: computeBump(teams, played),
-    upcoming: null, // populated by +page.server.ts after fetching PL fixtures
+    upcoming: null,
+    previousGW: null,
   };
 }

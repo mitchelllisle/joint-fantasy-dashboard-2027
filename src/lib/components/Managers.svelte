@@ -3,16 +3,12 @@
   import type { DashboardData } from '$lib/types.js';
   import { ord, streakOf, POSCOL, POSLAB } from '$lib/utils.js';
   import Avatar from '$lib/components/Avatar.svelte';
-  import Modal from '$lib/components/Modal.svelte';
-  import ExpandButton from '$lib/components/ExpandButton.svelte';
 
   export let dashboard: DashboardData;
   export let selectedIdx: number;
   export let banter: boolean;
 
   const dispatch = createEventDispatcher<{ select: number }>();
-
-  let openModal: string | null = null;
 
   $: sel = dashboard.teams[selectedIdx] ?? dashboard.ordered[0];
   $: ordered = dashboard.ordered;
@@ -125,14 +121,11 @@
 
       <!-- GW bar chart card -->
       <div style="background:#111113;border-radius:20px;padding:22px 24px">
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div>
-            <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Points per gameweek</div>
-            <div style="font:400 11.5px/1.4 Barlow,sans-serif;color:rgba(255,255,255,.35);margin-top:4px">
-              dashed line = gameweek average
-            </div>
+        <div>
+          <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Points per gameweek</div>
+          <div style="font:400 11.5px/1.4 Barlow,sans-serif;color:rgba(255,255,255,.35);margin-top:4px">
+            dashed line = gameweek average
           </div>
-          <ExpandButton on:click={() => openModal = 'gwbars'} />
         </div>
         <!-- Chart container -->
         <div style="position:relative;height:210px;margin-top:20px;display:flex;align-items:flex-end;gap:7px">
@@ -164,10 +157,7 @@
 
       <!-- Squad contribution card -->
       <div style="background:#111113;border-radius:20px;padding:22px 24px">
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Squad contribution</div>
-          <ExpandButton on:click={() => openModal = 'squad'} />
-        </div>
+        <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Squad contribution</div>
         {#if sel.squad}
           <div style="margin-top:16px;display:flex;flex-direction:column">
             {#each sel.squad.slice(0, 6) as [pos, name, pts]}
@@ -198,10 +188,7 @@
 
       <!-- Position blocks card -->
       <div style="background:#111113;border-radius:20px;padding:22px 24px">
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Points by position</div>
-          <ExpandButton on:click={() => openModal = 'posblocks'} />
-        </div>
+        <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Points by position</div>
         {#if sel.positionMix}
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;align-items:end;height:190px">
             {#each sel.positionMix as v, i}
@@ -221,10 +208,7 @@
 
       <!-- Draft board card -->
       <div style="background:#141416;border-radius:20px;padding:22px 24px">
-        <div style="display:flex;align-items:center;justify-content:space-between">
-          <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Draft board · {sel.name}</div>
-          <ExpandButton on:click={() => openModal = 'draftboard'} />
-        </div>
+        <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Draft board · {sel.name}</div>
         <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">
           Draft pick analytics coming soon — requires draft history data.
         </div>
@@ -246,106 +230,6 @@
       </div>
     </div>
 
-    <!-- Modals -->
-
-    <Modal title="Points per gameweek" open={openModal === 'gwbars'} on:close={() => openModal = null}>
-      <div style="position:relative">
-        <div style="font:400 11.5px/1.4 Barlow,sans-serif;color:rgba(255,255,255,.35);margin-bottom:12px">
-          dashed line = gameweek average
-        </div>
-        <div style="position:relative;height:210px;display:flex;align-items:flex-end;gap:7px">
-          <div style="position:absolute;left:0;right:0;bottom:{avgBottom}%;height:0;border-top:1px dashed rgba(255,255,255,.3);pointer-events:none"></div>
-          {#each sel.points as v, i}
-            <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:6px">
-              <div style="font:500 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.5);text-align:center">{v}</div>
-              <div style="height:{Math.round(v / maxGw * 100)}%;border-radius:6px 6px 3px 3px;background:{barColor(sel.results[i], sel.color)}"></div>
-              <div style="font:400 10px/1 Barlow,sans-serif;color:rgba(255,255,255,.3);text-align:center">{i + 1}</div>
-            </div>
-          {/each}
-        </div>
-        <div style="display:flex;align-items:center;gap:14px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
-          {#each [
-            { label: 'W', color: sel.color },
-            { label: 'D', color: 'rgba(255,255,255,.28)' },
-            { label: 'L', color: 'rgba(255,77,22,.55)' },
-          ] as leg}
-            <div style="display:flex;align-items:center;gap:6px">
-              <div style="width:10px;height:10px;border-radius:3px;background:{leg.color};flex:none"></div>
-              <span style="font:400 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.4)">{leg.label}</span>
-            </div>
-          {/each}
-        </div>
-      </div>
-    </Modal>
-
-    <Modal title="Squad contribution" open={openModal === 'squad'} on:close={() => openModal = null}>
-      <div style="position:relative">
-        {#if sel.squad}
-          <div style="display:flex;flex-direction:column">
-            {#each sel.squad.slice(0, 6) as [pos, name, pts]}
-              {@const posIdx = POSLAB.findIndex(l => l === pos)}
-              {@const posColor = posIdx >= 0 ? POSCOL[posIdx] : '#f4f4f2'}
-              {@const fillPct = pts / topPts * 100}
-              <div style="display:grid;grid-template-columns:32px 1fr 1.05fr 40px;gap:10px;align-items:center;padding:6px 0">
-                <div style="font:500 10.5px/1 Barlow,sans-serif;color:{posColor}">{pos}</div>
-                <div style="font:500 13.5px/1.1 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{name}</div>
-                <div style="height:8px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden">
-                  <div style="height:100%;width:{fillPct}%;border-radius:999px;background:{posColor}"></div>
-                </div>
-                <div style="font:600 12.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.65);text-align:right">{pts}</div>
-              </div>
-            {/each}
-          </div>
-          {#if squadNote}
-            <p style="border-top:1px solid rgba(255,255,255,.06);margin:20px 0 0;padding-top:16px;font:400 13px/1.55 Barlow,sans-serif;color:rgba(255,255,255,.5);text-wrap:pretty">{squadNote}</p>
-          {/if}
-        {:else}
-          <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">Squad data not yet available</div>
-        {/if}
-      </div>
-    </Modal>
-
-    <Modal title="Points by position" open={openModal === 'posblocks'} on:close={() => openModal = null}>
-      <div style="position:relative">
-        {#if sel.positionMix}
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;align-items:end;height:190px">
-            {#each sel.positionMix as v, i}
-              <div style="display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:10px">
-                <div style="height:{66 + (v / mxMix) * 112}px;border-radius:12px;background:{BLOCK_BG[i]};padding:13px;display:flex;flex-direction:column;justify-content:space-between">
-                  <div style="font:600 16px/1 Barlow,sans-serif;color:{BLOCK_FG[i]}">{Math.round(v * 100)}%</div>
-                  <div style="font:500 12px/1 Barlow,sans-serif;color:{BLOCK_FG[i]};opacity:.75">{Math.round(v * sel.total)} pts</div>
-                </div>
-                <div style="font:400 12.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.45);text-align:center">{POSLAB[i]}</div>
-              </div>
-            {/each}
-          </div>
-        {:else}
-          <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">Position data not yet available</div>
-        {/if}
-      </div>
-    </Modal>
-
-    <Modal title="Draft board" open={openModal === 'draftboard'} on:close={() => openModal = null}>
-      <div style="position:relative">
-        <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);text-align:center;padding:24px 0">
-          Draft pick analytics coming soon — requires draft history data.
-        </div>
-        <div style="display:flex;gap:22px;border-top:1px solid rgba(255,255,255,.06);margin-top:20px;padding-top:16px">
-          <div>
-            <div style="font:400 11.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.4)">Best gameweek</div>
-            <div style="font:600 22px/1 Barlow,sans-serif;color:#7bdcb5;margin-top:8px">{Math.max(...sel.points)}</div>
-          </div>
-          <div>
-            <div style="font:400 11.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.4)">Worst gameweek</div>
-            <div style="font:600 22px/1 Barlow,sans-serif;color:#ff4d16;margin-top:8px">{Math.min(...sel.points)}</div>
-          </div>
-          <div>
-            <div style="font:400 11.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.4)">Current run</div>
-            <div style="font:600 22px/1 Barlow,sans-serif;color:#f4f4f2;margin-top:8px">{streakOf(sel.results)}</div>
-          </div>
-        </div>
-      </div>
-    </Modal>
 
   </div>
 </div>

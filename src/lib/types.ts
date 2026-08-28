@@ -152,7 +152,41 @@ export interface UpcomingGW {
   gw: number;
   fixtures: UpcomingPLFixture[];
 }
-// ── Top-level dashboard ───────────────────────────────────────────────────────
+// ── Previous GW results ───────────────────────────────────────────────────────
+
+export interface PreviousGWPlayer {
+  name: string;
+  pos: string;
+  points: number;
+  isStarter: boolean;
+}
+
+export interface PreviousGWManager {
+  teamName: string;
+  teamKey: string;
+  color: string;
+  totalPoints: number;
+  players: PreviousGWPlayer[];
+}
+
+export interface PreviousGWFixture {
+  key: number;
+  homeTeam: string;
+  awayTeam: string;
+  homeShort: string;
+  awayShort: string;
+  homeLogo: string | null;
+  awayLogo: string | null;
+  homeScore: number | null;
+  awayScore: number | null;
+  managers: PreviousGWManager[];
+}
+
+export interface PreviousGW {
+  gw: number;
+  fixtures: PreviousGWFixture[];
+}
+
 
 export interface DashboardData {
   gw: number;
@@ -166,4 +200,5 @@ export interface DashboardData {
   race: RaceChartData;
   bump: BumpChartData;
   upcoming: UpcomingGW | null;
+  previousGW: PreviousGW | null;
 }

@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 /**
  * Fetches FPL Draft API data and writes JSON to src/lib/fetched/.
- * Run before `npm run build`. On failure the committed seed files are used
- * so the build always succeeds with last-known-good data.
+ * Run before `npm run build`. On failure the committed seed files are used.
  *
- * Usage:
- *   LEAGUE_ID=6371 node scripts/fetch.js
+ * Usage:  LEAGUE_ID=6371 node scripts/fetch.js
  */
 
 import { writeFileSync, mkdirSync } from 'fs';
@@ -47,7 +45,7 @@ try {
   write('bootstrap.json', bootstrap);
   write('details.json', details);
 
-  // Current GW
+  // Detect current GW
   let currentGW = 1;
   if (Array.isArray(bootstrap.events)) {
     const cur = bootstrap.events.find(e => e.is_current);
@@ -56,23 +54,32 @@ try {
     currentGW = bootstrap.events.current;
   }
 
-  // Upcoming fixtures
+  // Upcoming PL fixtures (next GW)
   try {
     const fixtures = await get(`${FPL}/fixtures/?event=${currentGW + 1}`);
     write('fixtures.json', fixtures);
   } catch (e) {
-    console.warn(`  ⚠ fixtures skipped: ${e.message}`);
+    console.warn(`  ⚠ upcoming fixtures skipped: ${e.message}`);
   }
 
-  // Squad picks — builds bench waste + position mix data
-  // Maps element id → player object for quick lookup
+  // Completed PL fixtures + event live scores for the current GW
+  try {
+    const [completedFix, livePts] = await Promise.all([
+      get(`${FPL}/fixtures/?event=${currentGW}`),
+      get(`${DRAFT}/event/${currentGW}/live`),
+    ]);
+    write('completedFixtures.json', completedFix.filter(f => f.finished));
+    write('eventLive.json', livePts.elements ?? {});
+  } catch (e) {
+    console.warn(`  ⚠ completed fixtures / live data skipped: ${e.message}`);
+  }
+
+  // Squad picks for the current GW
   const playerById = Object.fromEntries(
     (bootstrap.elements ?? []).map(p => [p.id, p]),
   );
-
   const squads = [];
   let picksOk = 0, picksFail = 0;
-
   await Promise.all(
     (details.league_entries ?? []).map(async (entry) => {
       try {
@@ -80,25 +87,17 @@ try {
         for (const pick of (data.picks ?? [])) {
           const player = playerById[pick.element];
           if (!player) continue;
-          squads.push({
-            ...player,
-            owner: entry.entry_name,
-            team_name: entry.entry_name,
-            position: pick.position,
-          });
+          squads.push({ ...player, owner: entry.entry_name, team_name: entry.entry_name, position: pick.position });
         }
         picksOk++;
-      } catch {
-        picksFail++;
-      }
+      } catch { picksFail++; }
     }),
   );
-
   if (picksOk > 0) {
     write('squads.json', squads);
-    if (picksFail > 0) console.warn(`  ⚠ ${picksFail} entries failed picks`);
+    if (picksFail) console.warn(`  ⚠ ${picksFail} entries failed picks`);
   } else {
-    console.warn('  ⚠ no squad data available — picks endpoint may require auth');
+    console.warn('  ⚠ no squad data — picks endpoint may require auth');
   }
 
   console.log(`Done. (GW${currentGW}, ${details.league_entries?.length ?? 0} managers)`);
