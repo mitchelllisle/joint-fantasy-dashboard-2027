@@ -15,13 +15,6 @@
   }
 </script>
 
-<style>
-  @media (max-width: 768px) {
-    /* Accordion section headers */
-    :global(.app-nav) + :global(.page-content) { padding: 12px 16px 40px; }
-    /* Fixture match header wraps on narrow screens */
-  }
-</style>
 
 <!-- ── Accordion sections ──────────────────────────────────────────────────── -->
 <div style="display:flex;flex-direction:column;gap:10px">

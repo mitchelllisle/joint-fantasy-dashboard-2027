@@ -46,15 +46,20 @@
     return result === 'W' ? teamColor : result === 'D' ? 'rgba(255,255,255,.28)' : 'rgba(255,77,22,.55)';
   }
 
-  function keyEnter(handler: () => void): (e: KeyboardEvent) => void {
-    return (e) => { if (e.key === 'Enter') handler(); };
+  function keyActivate(handler: () => void): (e: KeyboardEvent) => void {
+    return (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handler();
+      }
+    };
   }
 </script>
 
 <div class="managers-main-grid" style="display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start">
 
   <!-- ── Left panel: Manager list ───────────────────────────────────────── -->
-  <div style="background:#111113;border-radius:20px;padding:18px 18px 20px">
+  <div class="mgr-left-panel" style="background:#111113;border-radius:20px;padding:18px 18px 20px">
     <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Managers</div>
     <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);margin-top:3px">Ranked by total points</div>
     <div class="mgr-picker" style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
@@ -64,7 +69,7 @@
           role="button"
           tabindex="0"
           on:click={() => dispatch('select', t.i)}
-          on:keydown={keyEnter(() => dispatch('select', t.i))}
+          on:keydown={keyActivate(() => dispatch('select', t.i))}
           style="display:grid;grid-template-columns:34px 1fr 48px;gap:11px;padding:11px 12px;
             border-radius:14px;cursor:pointer;
             background:{t.i === sel.i ? 'rgba(255,255,255,.06)' : '#17171a'};
