@@ -631,7 +631,7 @@
 </div>
 
 <!-- ── Section 5: Bottom row ──────────────────────────────────────────────────── -->
-<div style="display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:14px;margin-top:14px">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
 
   <!-- Bench wasted -->
   <div style="background:#111113;border-radius:20px;padding:22px 24px">
@@ -797,17 +797,5 @@
   {/if}
 </Modal>
 
-  <!-- Draft picks -->
-  <div style="background:#141416;border-radius:20px;padding:22px 24px">
-    <div style="display:flex;align-items:center;gap:10px">
-      <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Draft pick value</div>
-      <div style="font:400 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.4);
-        background:rgba(255,255,255,.06);border-radius:999px;padding:4px 10px">vs. expected</div>
-    </div>
-    <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);
-      text-align:center;padding:24px 0;margin-top:8px">
-      Draft pick analytics coming soon — requires draft history data.
-    </div>
-  </div>
 
 </div>
