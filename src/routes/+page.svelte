@@ -25,16 +25,16 @@
 <div style="min-height:100vh;background:#08080a">
 
   <!-- ── Sticky navbar ── -->
-  <nav style="position:sticky;top:0;z-index:20;background:#0b0b0c;
+  <nav class="app-nav" style="position:sticky;top:0;z-index:20;background:#0b0b0c;
     border-bottom:1px solid rgba(255,255,255,.08);
     padding:0 32px;height:58px;
     display:flex;align-items:center;gap:24px">
 
-    <img src="{base}/draft-logo.svg" alt="JointDraft" style="height:22px;width:auto;flex:none" />
-    <div style="width:1px;height:20px;background:rgba(255,255,255,.1);flex:none"></div>
+    <img class="nav-logo" src="{base}/draft-logo.svg" alt="JointDraft" style="height:22px;width:auto;flex:none" />
+    <div class="nav-divider" style="width:1px;height:20px;background:rgba(255,255,255,.1);flex:none"></div>
 
     {#if dashboard}
-      <div style="display:flex;align-items:center;gap:2px">
+      <div class="nav-pills" style="display:flex;align-items:center;gap:2px">
         {#each TABS as tab}
           <button
             class="nav-item"
@@ -51,7 +51,7 @@
   </nav>
 
   <!-- ── Page content ── -->
-  <div style="padding:20px 32px 48px">
+  <div class="page-content" style="padding:20px 32px 48px">
     {#if !dashboard}
       <!-- FPL API was unreachable at build time -->
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;

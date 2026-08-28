@@ -45,22 +45,31 @@
     if (!result) return teamColor;
     return result === 'W' ? teamColor : result === 'D' ? 'rgba(255,255,255,.28)' : 'rgba(255,77,22,.55)';
   }
+
+  function keyActivate(handler: () => void): (e: KeyboardEvent) => void {
+    return (e) => {
+      if (!e.repeat && (e.key === 'Enter' || e.key === ' ' || e.code === 'Space')) {
+        e.preventDefault();
+        handler();
+      }
+    };
+  }
 </script>
 
-<div style="display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start">
+<div class="managers-main-grid" style="display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start">
 
   <!-- ── Left panel: Manager list ───────────────────────────────────────── -->
-  <div style="background:#111113;border-radius:20px;padding:18px 18px 20px">
+  <div class="mgr-left-panel" style="background:#111113;border-radius:20px;padding:18px 18px 20px">
     <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Managers</div>
     <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.35);margin-top:3px">Ranked by total points</div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
+    <div class="mgr-picker" style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
       {#each ordered as t}
         <div
-          class="mgr-row"
+          class="mgr-row mgr-picker-item"
           role="button"
           tabindex="0"
           on:click={() => dispatch('select', t.i)}
-          on:keydown={(e) => e.key === 'Enter' && dispatch('select', t.i)}
+          on:keydown={keyActivate(() => dispatch('select', t.i))}
           style="display:grid;grid-template-columns:34px 1fr 48px;gap:11px;padding:11px 12px;
             border-radius:14px;cursor:pointer;
             background:{t.i === sel.i ? 'rgba(255,255,255,.06)' : '#17171a'};
@@ -83,7 +92,7 @@
   <div style="display:flex;flex-direction:column;gap:14px">
 
     <!-- Profile header card -->
-    <div style="background:#111113;border-radius:20px;padding:22px 24px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px">
+    <div class="profile-header" style="background:#111113;border-radius:20px;padding:22px 24px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px">
       <!-- Avatar + identity -->
       <div style="display:flex;align-items:flex-end;gap:16px">
         <Avatar color={sel.color} init={sel.key} size={56} fontSize={16} />
@@ -100,14 +109,14 @@
         </div>
       </div>
       <!-- Stat chips -->
-      <div style="display:flex;gap:12px;flex:none">
+      <div class="stats-chips" style="display:flex;gap:12px;flex:none">
         {#each [
           { label: 'Total pts',   value: String(sel.total),                                               bar: '#7bdcb5' },
           { label: 'Avg / GW',    value: String(selAvg),                                                  bar: '#ffc93c' },
           { label: 'vs field avg',value: (sel.luck >= 0 ? '+' : '') + sel.luck.toFixed(1),               bar: '#68b6e8' },
           { label: 'Bench lost',  value: sel.bench != null ? String(sel.bench) : '—',                    bar: '#ff4d16' },
         ] as chip}
-          <div style="background:#17171a;border-radius:14px;padding:13px 16px;min-width:96px">
+          <div class="stats-chip" style="background:#17171a;border-radius:14px;padding:13px 16px;min-width:96px">
             <div style="width:12px;height:3px;border-radius:2px;background:{chip.bar}"></div>
             <div style="font:400 11.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.45);margin-top:6px">{chip.label}</div>
             <div style="font:600 24px/1 Barlow,sans-serif;color:#f4f4f2;letter-spacing:-.025em;margin-top:11px">{chip.value}</div>
@@ -117,7 +126,7 @@
     </div>
 
     <!-- Row 2: GW bar chart + Squad contribution -->
-    <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
+    <div class="mgr-row1" style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px">
 
       <!-- GW bar chart card -->
       <div style="background:#111113;border-radius:20px;padding:22px 24px">
@@ -184,7 +193,7 @@
     </div>
 
     <!-- Row 3: Position blocks + Draft board -->
-    <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:14px">
+    <div class="mgr-row2" style="display:grid;grid-template-columns:1.1fr 1fr;gap:14px">
 
       <!-- Position blocks card -->
       <div style="background:#111113;border-radius:20px;padding:22px 24px">
