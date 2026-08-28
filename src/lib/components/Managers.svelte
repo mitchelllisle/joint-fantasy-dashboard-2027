@@ -48,7 +48,7 @@
 
   function keyActivate(handler: () => void): (e: KeyboardEvent) => void {
     return (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
+      if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
         handler();
       }
