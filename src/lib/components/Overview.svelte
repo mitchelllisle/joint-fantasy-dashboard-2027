@@ -131,6 +131,21 @@
   let openModal: string | null = null;
 </script>
 
+<style>
+  @media (max-width: 768px) {
+    .hero-band { flex-direction: column !important; align-items: flex-start !important; padding: 18px !important; gap: 14px !important; }
+    .hero-chips { width: 100% !important; flex-wrap: wrap !important; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .standings-scatter-grid { grid-template-columns: 1fr !important; }
+    .charts-row { grid-template-columns: 1fr !important; }
+    .bottom-row { grid-template-columns: 1fr !important; }
+    .standings-header-grid, .standings-row-grid {
+      grid-template-columns: 22px 1fr 56px !important;
+    }
+    .col-avg { display: none !important; }
+  }
+</style>
+
 <!-- ── Section 1: Hero band ─────────────────────────────────────────────────── -->
 <div class="hero-band" style="background:linear-gradient(120deg,rgba(255,77,22,.13) 0%,rgba(255,77,22,.03) 55%,transparent 100%),#111113;
   border:1px solid rgba(255,77,22,.18);border-radius:20px;padding:28px 30px;

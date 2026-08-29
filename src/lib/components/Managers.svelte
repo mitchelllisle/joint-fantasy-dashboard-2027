@@ -56,6 +56,31 @@
   }
 </script>
 
+<style>
+  @media (max-width: 768px) {
+    /* Grid → single column; force items to not overflow */
+    .managers-main-grid { grid-template-columns: 1fr !important; }
+    .managers-main-grid > * { min-width: 0 !important; overflow: hidden; }
+
+    .mgr-left-panel { padding: 14px !important; }
+
+    /* Manager picker: horizontal scroll row */
+    .mgr-picker { flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+    .mgr-picker-item { flex: none !important; width: 160px !important; }
+
+    /* Profile header: stack avatar/name above stat chips */
+    .profile-header { flex-direction: column !important; align-items: flex-start !important; gap: 14px !important; }
+
+    /* Stat chips: 2-column grid filling full width */
+    .stats-chips { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; width: 100% !important; flex: unset !important; }
+    .stats-chip { min-width: 0 !important; padding: 10px 12px !important; }
+
+    /* Inner content rows: single column */
+    .mgr-row1 { grid-template-columns: 1fr !important; }
+    .mgr-row2 { grid-template-columns: 1fr !important; }
+  }
+</style>
+
 <div class="managers-main-grid" style="display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start">
 
   <!-- ── Left panel: Manager list ───────────────────────────────────────── -->

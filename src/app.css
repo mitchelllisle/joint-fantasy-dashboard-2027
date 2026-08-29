@@ -4,80 +4,58 @@
   padding: 0;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background: #08080a;
   font-family: Barlow, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-/* Hover transitions — applied via class in components */
+/* Hover transitions */
 .standings-row {
   cursor: pointer;
   transition: background 130ms ease-out;
 }
-.standings-row:hover {
-  background: rgba(255, 255, 255, 0.04) !important;
-}
+.standings-row:hover { background: rgba(255,255,255,.04) !important; }
 
 .mgr-row {
   cursor: pointer;
   transition: background 130ms ease-out;
 }
-.mgr-row:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-}
+.mgr-row:hover { background: rgba(255,255,255,.05) !important; }
 
 .nav-item {
   cursor: pointer;
   transition: background 130ms ease-out, color 130ms ease-out;
 }
-.nav-item:hover {
-  color: #f4f4f2 !important;
-}
+.nav-item:hover { color: #f4f4f2 !important; }
 
-/* ── Mobile breakpoint (≤ 768px) ─────────────────────────────────────────── */
+/* ── Global mobile fixes ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  /* Navbar */
   .app-nav {
-    padding: 0 16px !important;
-    gap: 12px !important;
+    padding: 0 12px !important;
+    gap: 8px !important;
     height: 52px !important;
   }
-  .nav-logo { height: 18px !important; }
+  .nav-logo {
+    /* Show only the icon/leaf portion of the SVG (left ~45px of 382px) */
+    width: 36px !important;
+    height: 36px !important;
+    object-fit: none !important;
+    object-position: left center !important;
+    flex: none !important;
+  }
   .nav-divider { display: none !important; }
-  .nav-pills { gap: 1px !important; }
+  .nav-pills { gap: 0 !important; }
+  .nav-item { padding: 7px 10px !important; font-size: 13px !important; }
+  .page-content { padding: 12px 12px 40px !important; }
 
-  /* Page content */
-  .page-content { padding: 12px 16px 40px !important; }
-
-  /* Overview */
-  .hero-band {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 16px !important;
-    padding: 20px 18px !important;
-  }
-  .hero-chips { flex-wrap: wrap !important; gap: 8px !important; }
-  .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
-  .standings-scatter-grid { grid-template-columns: 1fr !important; }
-  .charts-row { grid-template-columns: 1fr !important; }
-  .bottom-row { grid-template-columns: 1fr !important; }
-
-  /* Standings columns: hide Avg/GW on mobile */
-  .standings-header-grid,
-  .standings-row-grid {
-    grid-template-columns: 22px 1fr 60px !important;
-  }
-  .col-avg { display: none !important; }
-
-  /* Managers */
-  .managers-main-grid { grid-template-columns: 1fr !important; }
-  .mgr-left-panel { padding: 14px !important; }
-  .mgr-picker { flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; gap: 8px !important; padding-bottom: 4px; }
-  .mgr-picker-item { flex: none !important; min-width: unset !important; }
-  .profile-header { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
-  .stats-chips { flex-wrap: wrap !important; gap: 8px !important; }
-  .stats-chip { min-width: 80px !important; }
-  .mgr-row1 { grid-template-columns: 1fr !important; }
-  .mgr-row2 { grid-template-columns: 1fr !important; }
+  /* Fixtures: hide kickoff, shrink logos */
+  .fix-kickoff { display: none !important; }
+  .fix-logo { width: 20px !important; height: 20px !important; }
+  .fix-team-name { max-width: 100px !important; }
 }

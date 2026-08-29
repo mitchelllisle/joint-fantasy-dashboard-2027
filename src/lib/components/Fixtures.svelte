@@ -51,20 +51,20 @@
               <div style="display:flex;align-items:center;gap:16px;min-width:0">
                 <div style="display:flex;align-items:center;gap:8px;min-width:0">
                   {#if fix.homeLogo}
-                    <img src="{base}{fix.homeLogo}" alt={fix.homeShort} width="24" height="24" style="object-fit:contain;flex:none" />
+                    <img class="fix-logo" src="{base}{fix.homeLogo}" alt={fix.homeShort} width="24" height="24" style="object-fit:contain;flex:none" />
                   {/if}
-                  <span style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.homeTeam}</span>
+                  <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.homeTeam}</span>
                 </div>
                 <span style="font:400 12px/1 Barlow,sans-serif;color:rgba(255,255,255,.3);flex:none">vs</span>
                 <div style="display:flex;align-items:center;gap:8px;min-width:0">
                   {#if fix.awayLogo}
-                    <img src="{base}{fix.awayLogo}" alt={fix.awayShort} width="24" height="24" style="object-fit:contain;flex:none" />
+                    <img class="fix-logo" src="{base}{fix.awayLogo}" alt={fix.awayShort} width="24" height="24" style="object-fit:contain;flex:none" />
                   {/if}
-                  <span style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.awayTeam}</span>
+                  <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.awayTeam}</span>
                 </div>
               </div>
               {#if fix.kickoff}
-                <span style="font:400 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.35);white-space:nowrap;flex:none">{fix.kickoff}</span>
+                <span class="fix-kickoff" style="font:400 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.35);white-space:nowrap;flex:none">{fix.kickoff}</span>
               {/if}
             </div>
 
@@ -136,11 +136,11 @@
                   <!-- Home -->
                   <div style="display:flex;align-items:center;gap:8px">
                     {#if fix.homeLogo}
-                      <img src="{base}{fix.homeLogo}" alt={fix.homeShort} width="24" height="24" style="object-fit:contain;flex:none" />
+                      <img class="fix-logo" src="{base}{fix.homeLogo}" alt={fix.homeShort} width="24" height="24" style="object-fit:contain;flex:none" />
                     {/if}
                     <span style="font:600 14px/1.2 Barlow,sans-serif;
                       color:{fix.homeScore != null && fix.homeScore > (fix.awayScore ?? 0) ? '#f4f4f2' : 'rgba(255,255,255,.5)'};
-                      white-space:nowrap">{fix.homeTeam}</span>
+                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.homeTeam}</span>
                   </div>
                   <!-- Score -->
                   {#if fix.homeScore != null}
@@ -153,11 +153,11 @@
                   <!-- Away -->
                   <div style="display:flex;align-items:center;gap:8px">
                     {#if fix.awayLogo}
-                      <img src="{base}{fix.awayLogo}" alt={fix.awayShort} width="24" height="24" style="object-fit:contain;flex:none" />
+                      <img class="fix-logo" src="{base}{fix.awayLogo}" alt={fix.awayShort} width="24" height="24" style="object-fit:contain;flex:none" />
                     {/if}
                     <span style="font:600 14px/1.2 Barlow,sans-serif;
                       color:{fix.awayScore != null && fix.awayScore > (fix.homeScore ?? 0) ? '#f4f4f2' : 'rgba(255,255,255,.5)'};
-                      white-space:nowrap">{fix.awayTeam}</span>
+                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.awayTeam}</span>
                   </div>
                 </div>
               </div>
