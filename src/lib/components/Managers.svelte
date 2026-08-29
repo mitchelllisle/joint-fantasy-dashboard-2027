@@ -60,7 +60,7 @@
   @media (max-width: 768px) {
     /* Grid → single column; force items to not overflow */
     .managers-main-grid { grid-template-columns: 1fr !important; }
-    .managers-main-grid > * { min-width: 0 !important; overflow: hidden; }
+    .managers-main-grid > * { min-width: 0 !important; }
 
     .mgr-left-panel { padding: 14px !important; }
 

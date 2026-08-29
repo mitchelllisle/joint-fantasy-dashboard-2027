@@ -57,5 +57,5 @@ body {
   /* Fixtures: hide kickoff, shrink logos */
   .fix-kickoff { display: none !important; }
   .fix-logo { width: 20px !important; height: 20px !important; }
-  .fix-team-name { max-width: 100px !important; }
+  .fix-team-name { min-width: 0 !important; }
 }

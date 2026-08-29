@@ -138,7 +138,7 @@
                     {#if fix.homeLogo}
                       <img class="fix-logo" src="{base}{fix.homeLogo}" alt={fix.homeShort} width="24" height="24" style="object-fit:contain;flex:none" />
                     {/if}
-                    <span style="font:600 14px/1.2 Barlow,sans-serif;
+                    <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;
                       color:{fix.homeScore != null && fix.homeScore > (fix.awayScore ?? 0) ? '#f4f4f2' : 'rgba(255,255,255,.5)'};
                       white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.homeTeam}</span>
                   </div>
@@ -155,7 +155,7 @@
                     {#if fix.awayLogo}
                       <img class="fix-logo" src="{base}{fix.awayLogo}" alt={fix.awayShort} width="24" height="24" style="object-fit:contain;flex:none" />
                     {/if}
-                    <span style="font:600 14px/1.2 Barlow,sans-serif;
+                    <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;
                       color:{fix.awayScore != null && fix.awayScore > (fix.homeScore ?? 0) ? '#f4f4f2' : 'rgba(255,255,255,.5)'};
                       white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.awayTeam}</span>
                   </div>
