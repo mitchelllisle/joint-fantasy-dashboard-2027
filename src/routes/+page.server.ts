@@ -55,14 +55,16 @@ export const load: PageServerLoad = () => {
   );
 
   // Previous fully-completed GW results
-  dashboard.previousGW = buildPreviousGWFixtures(
-    dashboard.gw - 1,
-    prevGWFixRaw as never[],
-    prevEventLiveRaw,
-    squads,
-    bootstrap as never,
-    dashboard.ordered,
-  );
+  if (dashboard.gw > 1) {
+    dashboard.previousGW = buildPreviousGWFixtures(
+      dashboard.gw - 1,
+      prevGWFixRaw as never[],
+      prevEventLiveRaw,
+      squads,
+      bootstrap as never,
+      dashboard.ordered,
+    );
+  }
 
   return { dashboard };
 };

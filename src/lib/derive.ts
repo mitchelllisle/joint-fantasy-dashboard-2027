@@ -183,6 +183,7 @@ export function buildUpcomingFixtures(
       return [{ teamName: mgr.name, teamKey: mgr.key, color: mgr.color, players }];
     });
 
+    if (managers.length === 0) continue;
     result.push({
       key: fix.id,
       homeTeam: home.name,

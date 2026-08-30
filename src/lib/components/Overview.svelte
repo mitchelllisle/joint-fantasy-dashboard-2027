@@ -518,7 +518,7 @@
         <text
           x={8} y={(race.T + race.H - race.B) / 2}
           text-anchor="middle" dominant-baseline="middle"
-          transform="rotate(-90 8 {(race.T + race.H - race.B) / 2})"
+          transform={`rotate(-90 8 ${(race.T + race.H - race.B) / 2})`}
           font-family="Barlow, sans-serif" font-size="10" font-weight="500"
           fill="rgba(255,255,255,.35)">Points</text>
         <!-- Y-axis tick labels -->
@@ -574,7 +574,7 @@
       <text
         x={8} y={(race.T + race.H - race.B) / 2}
         text-anchor="middle" dominant-baseline="middle"
-        transform="rotate(-90 8 {(race.T + race.H - race.B) / 2})"
+        transform={`rotate(-90 8 ${(race.T + race.H - race.B) / 2})`}
         font-family="Barlow, sans-serif" font-size="10" font-weight="500"
         fill="rgba(255,255,255,.35)">Points</text>
       {#each race.grid as g (g.key)}
@@ -627,7 +627,7 @@
         <text
           x={8} y={(bump.T + 340 - bump.B) / 2}
           text-anchor="middle" dominant-baseline="middle"
-          transform="rotate(-90 8 {(bump.T + 340 - bump.B) / 2})"
+          transform={`rotate(-90 8 ${(bump.T + 340 - bump.B) / 2})`}
           font-family="Barlow, sans-serif" font-size="10" font-weight="500"
           fill="rgba(255,255,255,.35)">Rank</text>
         <!-- Rank labels left-inset -->
@@ -688,7 +688,7 @@
       <text
         x={8} y={(bump.T + 340 - bump.B) / 2}
         text-anchor="middle" dominant-baseline="middle"
-        transform="rotate(-90 8 {(bump.T + 340 - bump.B) / 2})"
+        transform={`rotate(-90 8 ${(bump.T + 340 - bump.B) / 2})`}
         font-family="Barlow, sans-serif" font-size="10" font-weight="500"
         fill="rgba(255,255,255,.35)">Rank</text>
       {#each bump.rows as row (row.key)}
