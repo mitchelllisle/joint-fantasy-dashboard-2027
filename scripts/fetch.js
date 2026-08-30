@@ -62,16 +62,30 @@ try {
     console.warn(`  ⚠ upcoming fixtures skipped: ${e.message}`);
   }
 
-  // Completed PL fixtures + event live scores for the current GW
+  // Current GW: all fixtures (finished + unfinished) + live scores
   try {
-    const [completedFix, livePts] = await Promise.all([
+    const [currentGWFix, livePts] = await Promise.all([
       get(`${FPL}/fixtures/?event=${currentGW}`),
       get(`${DRAFT}/event/${currentGW}/live`),
     ]);
-    write('completedFixtures.json', completedFix.filter(f => f.finished));
+    write('currentGWFixtures.json', currentGWFix);
     write('eventLive.json', livePts.elements ?? {});
   } catch (e) {
-    console.warn(`  ⚠ completed fixtures / live data skipped: ${e.message}`);
+    console.warn(`  ⚠ current GW fixtures / live data skipped: ${e.message}`);
+  }
+
+  // Previous GW (fully completed): fixtures + live scores for player points
+  if (currentGW > 1) {
+    try {
+      const [prevFix, prevLive] = await Promise.all([
+        get(`${FPL}/fixtures/?event=${currentGW - 1}`),
+        get(`${DRAFT}/event/${currentGW - 1}/live`),
+      ]);
+      write('prevGWFixtures.json', prevFix.filter(f => f.finished));
+      write('prevEventLive.json', prevLive.elements ?? {});
+    } catch (e) {
+      console.warn(`  ⚠ previous GW fixtures / live data skipped: ${e.message}`);
+    }
   }
 
   // Squad picks for the current GW

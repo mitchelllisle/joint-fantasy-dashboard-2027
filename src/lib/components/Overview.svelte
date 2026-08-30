@@ -506,12 +506,22 @@
     </div>
     <div style="position:relative">
       <svg viewBox={race.vb} style="width:100%;height:auto;display:block">
+        <!-- Plot border -->
+        <rect x={race.L} y={race.T} width={race.RX - race.L} height={race.H - race.T - race.B}
+          fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1" />
         <!-- Gridlines -->
         {#each race.grid as g (g.key)}
           <line x1={race.L} y1={g.y} x2={race.RX} y2={g.y}
             stroke="rgba(255,255,255,.06)" stroke-width="1" />
         {/each}
-        <!-- Y-axis labels — inside the SVG left-inset so they can't be clipped -->
+        <!-- Y-axis title -->
+        <text
+          x={8} y={(race.T + race.H - race.B) / 2}
+          text-anchor="middle" dominant-baseline="middle"
+          transform={`rotate(-90 8 ${(race.T + race.H - race.B) / 2})`}
+          font-family="Barlow, sans-serif" font-size="10" font-weight="500"
+          fill="rgba(255,255,255,.35)">Points</text>
+        <!-- Y-axis tick labels -->
         {#each race.grid as g (g.key)}
           <text x={race.L - 6} y={g.y}
             text-anchor="end" dominant-baseline="middle"
@@ -525,13 +535,19 @@
             stroke-linecap="round" stroke-linejoin="round" />
           <circle cx={line.ex} cy={line.ey} r="6" fill={line.color} opacity={line.op} />
         {/each}
-        <!-- X-tick labels -->
+        <!-- X-axis tick labels -->
         {#each race.xticks as xt (xt.key)}
-          <text x={xt.x} y={race.H - 2}
+          <text x={xt.x} y={race.H - race.B + 14}
             text-anchor="middle"
             font-family="Barlow, sans-serif" font-size="11" font-weight="400"
             fill="rgba(255,255,255,.28)">{xt.label}</text>
         {/each}
+        <!-- X-axis title -->
+        <text
+          x={(race.L + race.RX) / 2} y={race.H - 4}
+          text-anchor="middle"
+          font-family="Barlow, sans-serif" font-size="10" font-weight="500"
+          fill="rgba(255,255,255,.35)">Gameweek</text>
       </svg>
 
       <!-- End labels (HTML for colour + collision-avoidance positions) -->
@@ -549,10 +565,18 @@
 <Modal title="Cumulative points race" open={openModal === 'race'} on:close={() => openModal = null}>
   <div style="position:relative">
     <svg viewBox={race.vb} style="width:100%;height:auto;display:block">
+      <rect x={race.L} y={race.T} width={race.RX - race.L} height={race.H - race.T - race.B}
+        fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1" />
       {#each race.grid as g (g.key)}
         <line x1={race.L} y1={g.y} x2={race.RX} y2={g.y}
           stroke="rgba(255,255,255,.06)" stroke-width="1" />
       {/each}
+      <text
+        x={8} y={(race.T + race.H - race.B) / 2}
+        text-anchor="middle" dominant-baseline="middle"
+        transform={`rotate(-90 8 ${(race.T + race.H - race.B) / 2})`}
+        font-family="Barlow, sans-serif" font-size="10" font-weight="500"
+        fill="rgba(255,255,255,.35)">Points</text>
       {#each race.grid as g (g.key)}
         <text x={race.L - 6} y={g.y}
           text-anchor="end" dominant-baseline="middle"
@@ -566,11 +590,16 @@
         <circle cx={line.ex} cy={line.ey} r="6" fill={line.color} opacity={line.op} />
       {/each}
       {#each race.xticks as xt (xt.key)}
-        <text x={xt.x} y={race.H - 2}
+        <text x={xt.x} y={race.H - race.B + 14}
           text-anchor="middle"
           font-family="Barlow, sans-serif" font-size="11" font-weight="400"
           fill="rgba(255,255,255,.28)">{xt.label}</text>
       {/each}
+      <text
+        x={(race.L + race.RX) / 2} y={race.H - 4}
+        text-anchor="middle"
+        font-family="Barlow, sans-serif" font-size="10" font-weight="500"
+        fill="rgba(255,255,255,.35)">Gameweek</text>
     </svg>
     {#each race.lines as line (line.key)}
       <div style="position:absolute;left:{line.labX.toFixed(2)}%;top:{line.labY.toFixed(2)}%;
@@ -591,57 +620,120 @@
     </div>
     <div style="position:relative">
       <svg viewBox={bump.vb} style="width:100%;height:auto;display:block">
-        <!-- Rank labels — inside SVG left-inset -->
+        <!-- Plot border -->
+        <rect x={bump.L} y={bump.T} width={bump.RX - bump.L} height={340 - bump.T - bump.B}
+          fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1" />
+        <!-- Y-axis title -->
+        <text
+          x={8} y={(bump.T + 340 - bump.B) / 2}
+          text-anchor="middle" dominant-baseline="middle"
+          transform={`rotate(-90 8 ${(bump.T + 340 - bump.B) / 2})`}
+          font-family="Barlow, sans-serif" font-size="10" font-weight="500"
+          fill="rgba(255,255,255,.35)">Rank</text>
+        <!-- Rank labels left-inset -->
         {#each bump.rows as row (row.key)}
-          <text x={bump.L - 8} y={row.y}
+          <text x={bump.L - 14} y={row.y}
             text-anchor="end" dominant-baseline="middle"
             font-family="Barlow, sans-serif" font-size="11" font-weight="400"
-            fill="rgba(255,255,255,.3)">{row.label}</text>
+            fill="rgba(255,255,255,.25)">{row.label}</text>
         {/each}
+        <!-- Lines (smooth bezier) -->
         {#each bump.lines as line (line.key)}
           <path d={line.d} fill="none" stroke={line.color}
-            stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
-          <circle cx={line.ex} cy={line.ey} r="12" fill={line.color} />
+            stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
         {/each}
+        <!-- Dots at each GW position -->
+        {#each bump.lines as line (line.key)}
+          {#each line.dots as dot}
+            <circle cx={dot.x} cy={dot.y} r="5" fill="#0b0b0c" stroke={line.color} stroke-width="2.5" />
+          {/each}
+        {/each}
+        <!-- End circles with team key -->
+        {#each bump.lines as line (line.key)}
+          <circle cx={line.ex} cy={line.ey} r="14" fill={line.color} />
+          <text x={line.ex} y={line.ey}
+            text-anchor="middle" dominant-baseline="middle"
+            font-family="Barlow, sans-serif" font-size="8" font-weight="700"
+            fill="#0b0b0c">{line.init}</text>
+        {/each}
+        <!-- Left-side team labels at start position -->
+        {#each bump.lines as line (line.key)}
+          <text x={bump.L - 20} y={line.dots[0]?.y ?? line.ey}
+            text-anchor="end" dominant-baseline="middle"
+            font-family="Barlow, sans-serif" font-size="10" font-weight="600"
+            fill={line.color}>{line.init}</text>
+        {/each}
+        <!-- X-axis tick labels -->
+        {#each bump.xticks as xt (xt.key)}
+          <text x={xt.x} y={340 - bump.B + 14}
+            text-anchor="middle"
+            font-family="Barlow, sans-serif" font-size="11" font-weight="400"
+            fill="rgba(255,255,255,.28)">{xt.label}</text>
+        {/each}
+        <!-- X-axis title -->
+        <text
+          x={(bump.L + bump.RX) / 2} y={336}
+          text-anchor="middle"
+          font-family="Barlow, sans-serif" font-size="10" font-weight="500"
+          fill="rgba(255,255,255,.35)">Gameweek</text>
       </svg>
-
-      <!-- Team key labels centred on end circles -->
-      {#each bump.lines as line (line.key)}
-        <div style="position:absolute;left:{line.labX.toFixed(2)}%;top:{line.labY.toFixed(2)}%;
-          transform:translate(-50%,-50%);
-          font:700 9px/1 Barlow,sans-serif;color:#0b0b0c;
-          pointer-events:none;white-space:nowrap">
-          {line.init}
-        </div>
-      {/each}
     </div>
   </div>
 
 <Modal title="Rank history" open={openModal === 'bump'} on:close={() => openModal = null}>
   <div style="position:relative">
     <svg viewBox={bump.vb} style="width:100%;height:auto;display:block">
+      <rect x={bump.L} y={bump.T} width={bump.RX - bump.L} height={340 - bump.T - bump.B}
+        fill="none" stroke="rgba(255,255,255,.1)" stroke-width="1" />
+      <text
+        x={8} y={(bump.T + 340 - bump.B) / 2}
+        text-anchor="middle" dominant-baseline="middle"
+        transform={`rotate(-90 8 ${(bump.T + 340 - bump.B) / 2})`}
+        font-family="Barlow, sans-serif" font-size="10" font-weight="500"
+        fill="rgba(255,255,255,.35)">Rank</text>
       {#each bump.rows as row (row.key)}
-        <text x={bump.L - 8} y={row.y}
+        <text x={bump.L - 14} y={row.y}
           text-anchor="end" dominant-baseline="middle"
           font-family="Barlow, sans-serif" font-size="11" font-weight="400"
-          fill="rgba(255,255,255,.3)">{row.label}</text>
+          fill="rgba(255,255,255,.25)">{row.label}</text>
       {/each}
       {#each bump.lines as line (line.key)}
         <path d={line.d} fill="none" stroke={line.color}
-          stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
-        <circle cx={line.ex} cy={line.ey} r="12" fill={line.color} />
+          stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
       {/each}
+      {#each bump.lines as line (line.key)}
+        {#each line.dots as dot}
+          <circle cx={dot.x} cy={dot.y} r="5" fill="#0b0b0c" stroke={line.color} stroke-width="2.5" />
+        {/each}
+      {/each}
+      {#each bump.lines as line (line.key)}
+        <circle cx={line.ex} cy={line.ey} r="14" fill={line.color} />
+        <text x={line.ex} y={line.ey}
+          text-anchor="middle" dominant-baseline="middle"
+          font-family="Barlow, sans-serif" font-size="8" font-weight="700"
+          fill="#0b0b0c">{line.init}</text>
+      {/each}
+      {#each bump.lines as line (line.key)}
+        <text x={bump.L - 20} y={line.dots[0]?.y ?? line.ey}
+          text-anchor="end" dominant-baseline="middle"
+          font-family="Barlow, sans-serif" font-size="10" font-weight="600"
+          fill={line.color}>{line.init}</text>
+      {/each}
+      {#each bump.xticks as xt (xt.key)}
+        <text x={xt.x} y={340 - bump.B + 14}
+          text-anchor="middle"
+          font-family="Barlow, sans-serif" font-size="11" font-weight="400"
+          fill="rgba(255,255,255,.28)">{xt.label}</text>
+      {/each}
+      <text
+        x={(bump.L + bump.RX) / 2} y={336}
+        text-anchor="middle"
+        font-family="Barlow, sans-serif" font-size="10" font-weight="500"
+        fill="rgba(255,255,255,.35)">Gameweek</text>
     </svg>
-    {#each bump.lines as line (line.key)}
-      <div style="position:absolute;left:{line.labX.toFixed(2)}%;top:{line.labY.toFixed(2)}%;
-        transform:translate(-50%,-50%);
-        font:700 9px/1 Barlow,sans-serif;color:#0b0b0c;
-        pointer-events:none;white-space:nowrap">
-        {line.init}
-      </div>
-    {/each}
   </div>
 </Modal>
+
 
 </div>
 

@@ -5,8 +5,10 @@
 
   export let dashboard: DashboardData;
 
-  let showUpcoming  = true;
-  let showPrevious  = false;
+  let showUpcoming       = false;
+  let showInProgress     = true;
+  let showCurrentResults = false;
+  let showPrevious       = false;
 
   function chevron(open: boolean) {
     return open
@@ -19,6 +21,82 @@
 <!-- ── Accordion sections ──────────────────────────────────────────────────── -->
 <div style="display:flex;flex-direction:column;gap:10px">
 
+  <!-- ══ In Progress: current GW unplayed fixtures ══ -->
+  {#if dashboard.inProgressGW}
+    <div style="background:#111113;border-radius:20px;overflow:hidden">
+
+      <button
+        type="button"
+        aria-expanded={showInProgress}
+        on:click={() => showInProgress = !showInProgress}
+        style="width:100%;display:flex;align-items:center;justify-content:space-between;
+          padding:18px 24px;background:transparent;border:none;cursor:pointer;text-align:left"
+      >
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font:600 16px/1 Barlow,sans-serif;color:#f4f4f2">
+            Gameweek {dashboard.inProgressGW.gw} · In Progress
+          </span>
+          <span style="font:400 12px/1 Barlow,sans-serif;color:rgba(255,255,255,.35)">
+            remaining fixtures · click to expand
+          </span>
+        </div>
+        <span style="color:rgba(255,255,255,.4)">{@html chevron(showInProgress)}</span>
+      </button>
+
+      {#if showInProgress}
+        <div style="display:flex;flex-direction:column;gap:10px;padding:0 24px 22px">
+          {#each dashboard.inProgressGW.fixtures as fix (fix.key)}
+            <div style="background:#17171a;border-radius:14px;padding:16px 18px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px">
+                <div style="display:flex;align-items:center;gap:16px;min-width:0">
+                  <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                    {#if fix.homeLogo}
+                      <img class="fix-logo" src="{base}{fix.homeLogo}" alt={fix.homeShort} width="24" height="24" style="object-fit:contain;flex:none" />
+                    {/if}
+                    <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.homeTeam}</span>
+                  </div>
+                  <span style="font:400 12px/1 Barlow,sans-serif;color:rgba(255,255,255,.3);flex:none">vs</span>
+                  <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                    {#if fix.awayLogo}
+                      <img class="fix-logo" src="{base}{fix.awayLogo}" alt={fix.awayShort} width="24" height="24" style="object-fit:contain;flex:none" />
+                    {/if}
+                    <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;color:#f4f4f2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.awayTeam}</span>
+                  </div>
+                </div>
+                {#if fix.kickoff}
+                  <span class="fix-kickoff" style="font:400 11px/1 Barlow,sans-serif;color:rgba(255,255,255,.35);white-space:nowrap;flex:none">{fix.kickoff}</span>
+                {/if}
+              </div>
+              {#if fix.managers.length > 0}
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+                  {#each fix.managers as mgr}
+                    <div style="background:#1c1c20;border-radius:10px;padding:10px 12px">
+                      <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px">
+                        <Avatar color={mgr.color} init={mgr.teamKey} size={18} fontSize={7} />
+                        <span style="font:500 11.5px/1 Barlow,sans-serif;color:#f4f4f2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{mgr.teamName}</span>
+                      </div>
+                      {#each mgr.players as p}
+                        <div style="display:flex;align-items:center;gap:5px;padding:2px 0">
+                          <span style="font:500 9.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.3);width:24px;flex:none">{p.pos}</span>
+                          <span style="font:400 11.5px/1 Barlow,sans-serif;color:{p.isStarter ? '#f4f4f2' : 'rgba(255,255,255,.35)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">{p.name}</span>
+                          {#if !p.isStarter}
+                            <span style="font:400 9.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.25);flex:none">bench</span>
+                          {/if}
+                        </div>
+                      {/each}
+                    </div>
+                  {/each}
+                </div>
+              {:else}
+                <div style="font:400 12px/1.5 Barlow,sans-serif;color:rgba(255,255,255,.25)">No managers have players in this fixture.</div>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+    </div>
+  {/if}
   <!-- ══ Upcoming gameweek (expanded by default) ══ -->
   <div style="background:#111113;border-radius:20px;overflow:hidden">
 
@@ -103,6 +181,92 @@
 
   </div>
 
+
+  <!-- ══ Current GW: results so far ══ -->
+  {#if dashboard.currentGWResults && dashboard.currentGWResults.fixtures.length > 0}
+    <div style="background:#111113;border-radius:20px;overflow:hidden">
+
+      <button
+        type="button"
+        aria-expanded={showCurrentResults}
+        on:click={() => showCurrentResults = !showCurrentResults}
+        style="width:100%;display:flex;align-items:center;justify-content:space-between;
+          padding:18px 24px;background:transparent;border:none;cursor:pointer;text-align:left"
+      >
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font:600 16px/1 Barlow,sans-serif;color:#f4f4f2">
+            Gameweek {dashboard.currentGWResults.gw} · Results so far
+          </span>
+          <span style="font:400 12px/1 Barlow,sans-serif;color:rgba(255,255,255,.35)">
+            click to expand
+          </span>
+        </div>
+        <span style="color:rgba(255,255,255,.4)">{@html chevron(showCurrentResults)}</span>
+      </button>
+
+      {#if showCurrentResults}
+        <div style="display:flex;flex-direction:column;gap:10px;padding:0 24px 22px">
+          {#each dashboard.currentGWResults.fixtures as fix (fix.key)}
+            <div style="background:#17171a;border-radius:14px;padding:16px 18px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px">
+                <div style="display:flex;align-items:center;gap:12px;min-width:0">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    {#if fix.homeLogo}
+                      <img class="fix-logo" src="{base}{fix.homeLogo}" alt={fix.homeShort} width="24" height="24" style="object-fit:contain;flex:none" />
+                    {/if}
+                    <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;
+                      color:{fix.homeScore != null && fix.homeScore > (fix.awayScore ?? 0) ? '#f4f4f2' : 'rgba(255,255,255,.5)'};
+                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.homeTeam}</span>
+                  </div>
+                  {#if fix.homeScore != null}
+                    <div style="display:flex;align-items:center;gap:6px;flex:none">
+                      <span style="font:600 18px/1 Barlow,sans-serif;color:#f4f4f2;letter-spacing:-.02em">{fix.homeScore}</span>
+                      <span style="font:400 14px/1 Barlow,sans-serif;color:rgba(255,255,255,.25)">–</span>
+                      <span style="font:600 18px/1 Barlow,sans-serif;color:#f4f4f2;letter-spacing:-.02em">{fix.awayScore}</span>
+                    </div>
+                  {/if}
+                  <div style="display:flex;align-items:center;gap:8px">
+                    {#if fix.awayLogo}
+                      <img class="fix-logo" src="{base}{fix.awayLogo}" alt={fix.awayShort} width="24" height="24" style="object-fit:contain;flex:none" />
+                    {/if}
+                    <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;
+                      color:{fix.awayScore != null && fix.awayScore > (fix.homeScore ?? 0) ? '#f4f4f2' : 'rgba(255,255,255,.5)'};
+                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.awayTeam}</span>
+                  </div>
+                </div>
+              </div>
+              {#if fix.managers.length > 0}
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">
+                  {#each fix.managers as mgr}
+                    <div style="background:#1c1c20;border-radius:10px;padding:10px 12px">
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                        <div style="display:flex;align-items:center;gap:7px">
+                          <Avatar color={mgr.color} init={mgr.teamKey} size={18} fontSize={7} />
+                          <span style="font:500 11.5px/1 Barlow,sans-serif;color:#f4f4f2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{mgr.teamName}</span>
+                        </div>
+                        <span style="font:600 12px/1 Barlow,sans-serif;color:#7bdcb5;flex:none;margin-left:8px">{mgr.totalPoints}pts</span>
+                      </div>
+                      {#each mgr.players as p}
+                        <div style="display:flex;align-items:center;gap:5px;padding:2px 0">
+                          <span style="font:500 9.5px/1 Barlow,sans-serif;color:rgba(255,255,255,.3);width:24px;flex:none">{p.pos}</span>
+                          <span style="font:400 11.5px/1 Barlow,sans-serif;color:{p.isStarter ? '#f4f4f2' : 'rgba(255,255,255,.35)'};flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{p.name}</span>
+                          <span style="font:600 11px/1 Barlow,sans-serif;
+                            color:{p.points >= 8 ? '#7bdcb5' : p.points >= 4 ? 'rgba(255,255,255,.65)' : 'rgba(255,255,255,.35)'};
+                            flex:none;min-width:22px;text-align:right">{p.points}</span>
+                        </div>
+                      {/each}
+                    </div>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {/if}
+
+    </div>
+  {/if}
+
   <!-- ══ Previous gameweeks (collapsed by default) ══ -->
   {#if dashboard.previousGW}
     <div style="background:#111113;border-radius:20px;overflow:hidden">
@@ -116,7 +280,7 @@
       >
         <div style="display:flex;align-items:center;gap:10px">
           <span style="font:600 16px/1 Barlow,sans-serif;color:#f4f4f2">
-            Gameweek {dashboard.previousGW.gw}
+            Gameweek {dashboard.previousGW.gw} · Completed
           </span>
           <span style="font:400 12px/1 Barlow,sans-serif;color:rgba(255,255,255,.35)">
             results · click to expand
@@ -138,7 +302,7 @@
                     {#if fix.homeLogo}
                       <img class="fix-logo" src="{base}{fix.homeLogo}" alt={fix.homeShort} width="24" height="24" style="object-fit:contain;flex:none" />
                     {/if}
-                    <span style="font:600 14px/1.2 Barlow,sans-serif;
+                    <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;
                       color:{fix.homeScore != null && fix.homeScore > (fix.awayScore ?? 0) ? '#f4f4f2' : 'rgba(255,255,255,.5)'};
                       white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.homeTeam}</span>
                   </div>
@@ -155,7 +319,7 @@
                     {#if fix.awayLogo}
                       <img class="fix-logo" src="{base}{fix.awayLogo}" alt={fix.awayShort} width="24" height="24" style="object-fit:contain;flex:none" />
                     {/if}
-                    <span style="font:600 14px/1.2 Barlow,sans-serif;
+                    <span class="fix-team-name" style="font:600 14px/1.2 Barlow,sans-serif;
                       color:{fix.awayScore != null && fix.awayScore > (fix.homeScore ?? 0) ? '#f4f4f2' : 'rgba(255,255,255,.5)'};
                       white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{fix.awayTeam}</span>
                   </div>
