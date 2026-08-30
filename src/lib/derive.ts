@@ -196,8 +196,7 @@ export function buildUpcomingFixtures(
     });
   }
 
-  // Only return GW if at least one fixture has manager players
-  return { gw, fixtures: result };
+  return result.length > 0 ? { gw, fixtures: result } : null;
 }
 
 
@@ -316,9 +315,11 @@ export function buildDashboard(
 
   // ── Per-GW scores ─────────────────────────────────────────────────────────
   // Priority: rawMatches (has H2H pairings) → matchResults → standings event_total
-  const played = rawMatches.filter(m => m.finished).reduce(
+  const playedFromMatches = rawMatches.filter(m => m.finished).reduce(
     (max, m) => Math.max(max, m.event - startEvent + 1), 0,
-  ) || 1;
+  );
+  // Include the current in-progress GW so charts show live data even before H2H matches close
+  const played = Math.max(playedFromMatches, currentGW - startEvent + 1) || 1;
   const pts: number[][] = entries.map(() => new Array(played).fill(0));
   const oppLeagueId: number[][] = entries.map(() => new Array(played).fill(-1));
 
@@ -348,11 +349,15 @@ export function buildDashboard(
     }
   }
 
-  // Final fallback: standings.event_total for current GW when no other source has data
+  // Final fallback: derive per-GW scores from standings when no match data exists.
+  // standings.event_total = current GW live score; standings.total = cumulative.
+  // GW (played-1) = event_total; GW (played-2) = total - event_total.
   if (rawMatches.length === 0 && matchResults.data.length === 0) {
     for (const [i, entry] of entries.entries()) {
       const s = standingByLeagueId.get(entry.id);
-      if (s && s.event_total > 0 && played === 1) pts[i][0] = s.event_total;
+      if (!s) continue;
+      pts[i][played - 1] = s.event_total ?? 0;
+      if (played >= 2) pts[i][played - 2] = Math.max(0, (s.total ?? 0) - (s.event_total ?? 0));
     }
   }
 
@@ -483,6 +488,8 @@ export function buildDashboard(
     race: computeRace(ordered, played),
     bump: computeBump(teams, played),
     upcoming: null,
+    inProgressGW: null,
+    currentGWResults: null,
     previousGW: null,
   };
 }

@@ -100,9 +100,7 @@ export interface FixturesData {
 
 export interface RaceChartData {
   vb: string;
-  L: number;
-  RX: number;
-  H: number;
+  L: number; RX: number; H: number; T: number; B: number;
   grid: Array<{ key: number; y: number; label: number; labX: number; labY: number }>;
   xticks: Array<{ key: number; label: string; x: number; labX: number }>;
   lines: Array<{
@@ -115,15 +113,19 @@ export interface RaceChartData {
 
 export interface BumpChartData {
   vb: string;
-  L: number;
+  L: number; RX: number; T: number; B: number;
   rows: Array<{ key: number; label: number; y: number; labX: number; labY: number }>;
+  xticks: Array<{ key: number; label: string; x: number }>;
   lines: Array<{
-    key: string; color: string; init: string;
+    key: string; color: string; init: string; name: string;
     d: string;
+    dots: Array<{ x: number; y: number }>;
     ex: number; ey: number;
     labX: number; labY: number;
+    startLabX: number; startLabY: number;
   }>;
 }
+
 
 
 
@@ -200,5 +202,10 @@ export interface DashboardData {
   race: RaceChartData;
   bump: BumpChartData;
   upcoming: UpcomingGW | null;
+  /** Unplayed fixtures remaining in the current GW */
+  inProgressGW: UpcomingGW | null;
+  /** Completed fixtures within the current in-progress GW */
+  currentGWResults: PreviousGW | null;
+  /** Fully completed previous GW results */
   previousGW: PreviousGW | null;
 }

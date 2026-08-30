@@ -34,7 +34,7 @@ export function computeRace(teams: DashboardTeam[], gw: number): RaceChartData {
 
   return {
     vb: `0 0 ${W} ${H}`,
-    L, RX: W - R, H,
+    L, RX: W - R, H, T, B,
     grid: ticks.map(v => ({ key: v, y: y(v), label: v, labX: (L - 9) / W * 100, labY: y(v) / H * 100 })),
     xticks: ([0, 2, 4, 6, 8, 10, 12, gwCount - 1]).filter((v, i, a) => a.indexOf(v) === i && v < gwCount)
       .map(i => ({ key: i, label: `GW${i + 1}`, x: x(i), labX: x(i) / W * 100 })),
@@ -43,28 +43,57 @@ export function computeRace(teams: DashboardTeam[], gw: number): RaceChartData {
 }
 
 export function computeBump(teams: DashboardTeam[], gwCount: number): BumpChartData {
-  const W = 560, H = 300, L = 40, R = 26, T = 22, B = 28;
+  const W = 620, H = 340, L = 90, R = 36, T = 28, B = 48;
+  const RX = W - R;
   const n = teams.length;
-  const x = (i: number) => gwCount <= 1 ? (L + W - R) / 2 : L + (i / (gwCount - 1)) * (W - L - R);
-  const y = (r: number) => T + ((r - 1) / (n - 1)) * (H - T - B);
+  const x = (i: number) => gwCount <= 1 ? (L + RX) / 2 : L + (i / (gwCount - 1)) * (RX - L);
+  const y = (r: number) => T + ((r - 1) / Math.max(n - 1, 1)) * (H - T - B);
+
+  function bumpPath(pts: Array<[number, number]>): string {
+    if (pts.length === 0) return '';
+    if (pts.length === 1) return `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+    let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+    for (let i = 1; i < pts.length; i++) {
+      const [x1, y1] = pts[i - 1];
+      const [x2, y2] = pts[i];
+      const mx = ((x1 + x2) / 2).toFixed(1);
+      d += ` C${mx},${y1.toFixed(1)} ${mx},${y2.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+    }
+    return d;
+  }
+
+  const xticks = Array.from({ length: gwCount }, (_, i) => ({
+    key: i, label: `GW${i + 1}`, x: x(i),
+  }));
 
   return {
     vb: `0 0 ${W} ${H}`,
-    L,
+    L, RX, T, B,
     rows: Array.from({ length: n }, (_, i) => i + 1).map(r => ({
       key: r, label: r, y: y(r),
-      labX: (L - 11) / W * 100,
+      labX: (L - 14) / W * 100,
       labY: y(r) / H * 100,
     })),
-    lines: teams.map(t => ({
-      key: t.key,
-      color: t.color,
-      init: t.key,
-      d: t.rankHist.map((r, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(r).toFixed(1)}`).join(' '),
-      ex: x(gwCount - 1),
-      ey: y(t.rank),
-      labX: x(gwCount - 1) / W * 100,
-      labY: y(t.rank) / H * 100,
-    })),
+    xticks,
+    lines: teams.map(t => {
+      const pts: Array<[number, number]> = t.rankHist.map((r, i) => [x(i), y(r)]);
+      const dots = pts.map(([px, py]) => ({ x: px, y: py }));
+      const startX = pts[0]?.[0] ?? x(0);
+      const startY = pts[0]?.[1] ?? y(t.rank);
+      return {
+        key: t.key,
+        color: t.color,
+        init: t.key,
+        name: t.name,
+        d: bumpPath(pts),
+        dots,
+        ex: x(gwCount - 1),
+        ey: y(t.rank),
+        labX: (x(gwCount - 1) + 10) / W * 100,
+        labY: y(t.rank) / H * 100,
+        startLabX: (startX - 10) / W * 100,
+        startLabY: startY / H * 100,
+      };
+    }),
   };
 }
