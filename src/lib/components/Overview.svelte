@@ -250,9 +250,10 @@
     </div>
 
     <!-- Rows -->
-    {#each ordered as team (team.i)}
+    {#each ordered as team, ti (team.i)}
       {@const delta = team.prev - team.rank}
       {@const avg = Math.round(team.total / Math.max(1, dashboard.gw))}
+      {@const gapsAbove = ordered.slice(0, ti).map((above, ai) => ({ rank: ai + 1, gap: above.total - team.total, color: above.color }))}
       <div
         class="standings-row standings-row-grid"
         role="button"
@@ -291,6 +292,19 @@
           {avg}
         </div>
       </div>
+      <!-- Gap badges -->
+      {#if gapsAbove.length > 0}
+        <div style="display:flex;gap:5px;flex-wrap:wrap;padding:0 0 6px 31px">
+          {#each gapsAbove as g}
+            <span style="font:500 10px/1 Barlow,sans-serif;
+              background:rgba(255,255,255,.06);border-radius:999px;
+              padding:3px 7px;color:rgba(255,255,255,.4)">
+              <span style="color:{g.color};opacity:.85">#{g.rank}</span>
+              &minus;{g.gap}
+            </span>
+          {/each}
+        </div>
+      {/if}
     {/each}
 
     <!-- Title race projection -->
@@ -324,9 +338,10 @@
       </div>
     {/each}
   </div>
-  {#each ordered as team (team.i)}
+  {#each ordered as team, ti (team.i)}
     {@const delta = team.prev - team.rank}
     {@const avg = Math.round(team.total / Math.max(1, dashboard.gw))}
+    {@const gapsAbove = ordered.slice(0, ti).map((above, ai) => ({ rank: ai + 1, gap: above.total - team.total, color: above.color }))}
     <div
       class="standings-row"
       role="button"
@@ -358,6 +373,18 @@
         {avg}
       </div>
     </div>
+    {#if gapsAbove.length > 0}
+      <div style="display:flex;gap:5px;flex-wrap:wrap;padding:0 0 6px 31px">
+        {#each gapsAbove as g}
+          <span style="font:500 10px/1 Barlow,sans-serif;
+            background:rgba(255,255,255,.06);border-radius:999px;
+            padding:3px 7px;color:rgba(255,255,255,.4)">
+            <span style="color:{g.color};opacity:.85">#{g.rank}</span>
+            &minus;{g.gap}
+          </span>
+        {/each}
+      </div>
+    {/if}
   {/each}
   <div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07)">
     <div style="font:600 15px/1 Barlow,sans-serif;color:#f4f4f2">Title race projection</div>
